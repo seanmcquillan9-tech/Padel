@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>padel-live-bracket</title>
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&f[]=cabinet-grotesk@700,800&display=swap" rel="stylesheet">
+<style>
+:root,[data-theme="light"]{--color-bg:#f7f6f2;--color-surface:#f9f8f5;--color-surface-2:#fbfbf9;--color-surface-offset:#f3f0ec;--color-border:#d4d1ca;--color-divider:#dcd9d5;--color-text:#28251d;--color-text-muted:#7a7974;--color-text-faint:#bab9b4;--color-primary:#01696f;--color-primary-hover:#0c4e54;--color-winner:#01696f;--color-loser:#8b3a3a;--color-final:#8a6200;--color-third:#2e5c10;--color-fifth:#4a3a70;--shadow-sm:0 1px 2px oklch(0.2 0.01 80/0.06);--shadow-md:0 4px 12px oklch(0.2 0.01 80/0.08);--shadow-lg:0 12px 32px oklch(0.2 0.01 80/0.12);--radius-md:.5rem;--radius-lg:.75rem;--radius-xl:1rem;--transition:180ms cubic-bezier(.16,1,.3,1);--font-display:'Cabinet Grotesk',sans-serif;--font-body:'Satoshi',sans-serif}
+[data-theme="dark"]{--color-bg:#171614;--color-surface:#1c1b19;--color-surface-2:#201f1d;--color-surface-offset:#22211f;--color-border:#393836;--color-divider:#262523;--color-text:#cdccca;--color-text-muted:#797876;--color-text-faint:#5a5957;--color-primary:#4f98a3;--color-primary-hover:#227f8b;--color-winner:#4f98a3;--color-loser:#c47575;--color-final:#d4a800;--color-third:#6daa45;--color-fifth:#9b7de0;--shadow-sm:0 1px 2px oklch(0 0 0/.2);--shadow-md:0 4px 12px oklch(0 0 0/.3);--shadow-lg:0 12px 32px oklch(0 0 0/.4)}
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:var(--font-body);background:var(--color-bg);color:var(--color-text);min-height:100vh}button,input{font:inherit}button{cursor:pointer}
+.app{max-width:1180px;margin:0 auto;padding:24px 16px 48px}.topbar{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:24px}.brand{display:flex;gap:12px;align-items:center}.brand svg{width:34px;height:34px;color:var(--color-primary)}.brand h1{font-family:var(--font-display);font-size:1.35rem}.actions{display:flex;gap:8px;flex-wrap:wrap}.btn{border:1px solid var(--color-border);background:var(--color-surface);color:var(--color-text);padding:10px 14px;border-radius:12px}.btn:hover{background:var(--color-surface-offset)}.btn.primary{background:var(--color-primary);color:#fff;border-color:var(--color-primary)}.btn.primary:hover{background:var(--color-primary-hover)}
+.hero{text-align:center;margin-bottom:18px}.hero h2{font-family:var(--font-display);font-size:clamp(1.6rem,3vw,2.4rem)}.hero p{color:var(--color-text-muted);margin-top:6px}.standings{background:var(--color-surface);border:1px solid var(--color-border);border-radius:16px;box-shadow:var(--shadow-sm)}
+.statusbar{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:18px}.pill{padding:8px 12px;border-radius:999px;background:var(--color-surface);border:1px solid var(--color-border);font-size:.85rem}.pill.live{color:var(--color-winner)}
+.bracket{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}.round{display:flex;flex-direction:column;gap:12px}.round-label{text-align:center;text-transform:uppercase;letter-spacing:.08em;font-size:.75rem;color:var(--color-text-muted);padding-bottom:8px;border-bottom:1px solid var(--color-divider)}
+.match{background:var(--color-surface);border:1px solid var(--color-border);border-radius:14px;overflow:hidden;box-shadow:var(--shadow-sm)}.match-head{padding:7px 10px;background:var(--color-surface-offset);border-bottom:1px solid var(--color-border);font-size:.72rem;font-weight:700;color:var(--color-text-muted);text-transform:uppercase;letter-spacing:.05em}.team{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:12px 12px;border:0;background:none;width:100%;text-align:left;color:inherit}.team + .team{border-top:1px solid var(--color-divider)}.team:hover{background:var(--color-surface-offset)}.team.winner{background:color-mix(in oklch,var(--color-winner) 12%,var(--color-surface))}.team.loser{background:color-mix(in oklch,var(--color-loser) 8%,var(--color-surface));opacity:.78}.name{font-size:.9rem;font-weight:500}.score{font-variant-numeric:tabular-nums;font-weight:700;min-width:22px;text-align:right}.final .match-head{background:color-mix(in oklch,var(--color-final) 18%,var(--color-surface-offset));color:var(--color-final)}.third .match-head{background:color-mix(in oklch,var(--color-third) 18%,var(--color-surface-offset));color:var(--color-third)}.fifth .match-head{background:color-mix(in oklch,var(--color-fifth) 18%,var(--color-surface-offset));color:var(--color-fifth)}
+.modalWrap{position:fixed;inset:0;background:oklch(0 0 0/.5);display:none;align-items:center;justify-content:center;padding:20px;z-index:20}.modalWrap.open{display:flex}.modal{width:min(460px,100%);background:var(--color-surface);border:1px solid var(--color-border);border-radius:18px;padding:18px;box-shadow:var(--shadow-lg)}.modal h3{font-family:var(--font-display);margin-bottom:6px}.muted{color:var(--color-text-muted)}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0}.field label{display:block;font-size:.75rem;text-transform:uppercase;letter-spacing:.05em;color:var(--color-text-muted);margin-bottom:6px}.field input{width:100%;padding:11px 12px;border-radius:12px;border:1px solid var(--color-border);background:var(--color-surface-offset);color:var(--color-text);outline:none}.winnerBtns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0 14px}.winnerBtn{padding:12px;border:1px solid var(--color-border);border-radius:12px;background:var(--color-surface-offset)}.winnerBtn.active{border-color:var(--color-primary);background:color-mix(in oklch,var(--color-primary) 14%,var(--color-surface))}.modalActions{display:flex;justify-content:flex-end;gap:8px}
+.standings{margin-top:22px;overflow:hidden}.standingsHead{padding:14px 16px;border-bottom:1px solid var(--color-divider);display:flex;justify-content:space-between;gap:12px;align-items:center}.standingsHead h3{font-family:var(--font-display)}table{width:100%;border-collapse:collapse}th,td{padding:12px 16px;border-bottom:1px solid var(--color-divider);text-align:left}th{font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:var(--color-text-muted);background:var(--color-surface-offset)}tr:last-child td{border-bottom:none}
+@media (max-width:900px){.bracket{grid-template-columns:1fr 1fr}}@media (max-width:560px){.bracket{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="brand">
+      <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="18" cy="18" r="16" stroke="currentColor" stroke-width="2"/><path d="M10 18 Q18 8 26 18 Q18 28 10 18Z" fill="currentColor" opacity=".18"/><path d="M10 18 Q18 8 26 18 Q18 28 10 18Z" stroke="currentColor" stroke-width="1.5"/><circle cx="18" cy="18" r="2.5" fill="currentColor"/></svg>
+      <h1>Greencastle Padel Live</h1>
+    </div>
+    <div class="actions">
+      <button class="btn" id="themeBtn">Theme</button>
+      <button class="btn" id="copyBtn">Copy Share Link</button>
+      <button class="btn" id="seedBtn">Load Sample Teams</button>
+    </div>
+  </div>
+
+  <div class="hero">
+    <h2>Live tournament bracket</h2>
+    <p>Everyone with the same tournament ID can enter results and watch scores update live.</p>
+  </div>
+
+  
+  <div class="statusbar">
+    <div class="pill">Tournament ID: <strong id="tourId">week2</strong></div>
+    <div class="pill live" id="syncState">● Live sync connected</div>
+  </div>
+
+  <div class="bracket">
+    <div class="round"><div class="round-label">Round 1</div>
+      <div class="match" id="m1"><div class="match-head">Court 1</div><button class="team" data-match="m1" data-slot="t1"><span class="name" id="m1-t1-name">Harry & Keith</span><span class="score" id="m1-t1-score">—</span></button><button class="team" data-match="m1" data-slot="t2"><span class="name" id="m1-t2-name">Ron & Conor</span><span class="score" id="m1-t2-score">—</span></button></div>
+      <div class="match" id="m2"><div class="match-head">Court 2</div><button class="team" data-match="m2" data-slot="t1"><span class="name" id="m2-t1-name">Cathal & Eoin</span><span class="score" id="m2-t1-score">—</span></button><button class="team" data-match="m2" data-slot="t2"><span class="name" id="m2-t2-name">Paddy & The Apprentice</span><span class="score" id="m2-t2-score">—</span></button></div>
+      <div class="match" id="m3"><div class="match-head">Court 3</div><button class="team" data-match="m3" data-slot="t1"><span class="name" id="m3-t1-name">Sean & McD</span><span class="score" id="m3-t1-score">—</span></button><button class="team" data-match="m3" data-slot="t2"><span class="name" id="m3-t2-name">Cahir & Luke</span><span class="score" id="m3-t2-score">—</span></button></div>
+      <div class="match" id="m4"><div class="match-head">Court 5</div><button class="team" data-match="m4" data-slot="t1"><span class="name" id="m4-t1-name">Spare Pair 1</span><span class="score" id="m4-t1-score">—</span></button><button class="team" data-match="m4" data-slot="t2"><span class="name" id="m4-t2-name">Spare Pair 2</span><span class="score" id="m4-t2-score">—</span></button></div>
+    </div>
+    <div class="round"><div class="round-label">Round 2</div>
+      <div class="match" id="m5"><div class="match-head">Winner 1 vs Winner 2</div><button class="team" data-match="m5" data-slot="t1"><span class="name" id="m5-t1-name">W: Match 1</span><span class="score" id="m5-t1-score">—</span></button><button class="team" data-match="m5" data-slot="t2"><span class="name" id="m5-t2-name">W: Match 2</span><span class="score" id="m5-t2-score">—</span></button></div>
+      <div class="match" id="m6"><div class="match-head">Winner 3 vs Winner 4</div><button class="team" data-match="m6" data-slot="t1"><span class="name" id="m6-t1-name">W: Match 3</span><span class="score" id="m6-t1-score">—</span></button><button class="team" data-match="m6" data-slot="t2"><span class="name" id="m6-t2-name">W: Match 4</span><span class="score" id="m6-t2-score">—</span></button></div>
+      <div class="match" id="m7"><div class="match-head">Loser 1 vs Loser 2</div><button class="team" data-match="m7" data-slot="t1"><span class="name" id="m7-t1-name">L: Match 1</span><span class="score" id="m7-t1-score">—</span></button><button class="team" data-match="m7" data-slot="t2"><span class="name" id="m7-t2-name">L: Match 2</span><span class="score" id="m7-t2-score">—</span></button></div>
+      <div class="match" id="m8"><div class="match-head">Loser 3 vs Loser 4</div><button class="team" data-match="m8" data-slot="t1"><span class="name" id="m8-t1-name">L: Match 3</span><span class="score" id="m8-t1-score">—</span></button><button class="team" data-match="m8" data-slot="t2"><span class="name" id="m8-t2-name">L: Match 4</span><span class="score" id="m8-t2-score">—</span></button></div>
+    </div>
+    <div class="round"><div class="round-label">Round 3</div>
+      <div class="match final" id="m9"><div class="match-head">Final · Winners of 5 & 6</div><button class="team" data-match="m9" data-slot="t1"><span class="name" id="m9-t1-name">W: Match 5</span><span class="score" id="m9-t1-score">—</span></button><button class="team" data-match="m9" data-slot="t2"><span class="name" id="m9-t2-name">W: Match 6</span><span class="score" id="m9-t2-score">—</span></button></div>
+      <div class="match third" id="m10"><div class="match-head">3rd Place · Losers of 5 & 6</div><button class="team" data-match="m10" data-slot="t1"><span class="name" id="m10-t1-name">L: Match 5</span><span class="score" id="m10-t1-score">—</span></button><button class="team" data-match="m10" data-slot="t2"><span class="name" id="m10-t2-name">L: Match 6</span><span class="score" id="m10-t2-score">—</span></button></div>
+      <div class="match fifth" id="m11"><div class="match-head">5th Place · Winners of 7 & 8</div><button class="team" data-match="m11" data-slot="t1"><span class="name" id="m11-t1-name">W: Match 7</span><span class="score" id="m11-t1-score">—</span></button><button class="team" data-match="m11" data-slot="t2"><span class="name" id="m11-t2-name">W: Match 8</span><span class="score" id="m11-t2-score">—</span></button></div>
+      <div class="match" id="m12"><div class="match-head">7th Place · Losers of 7 & 8</div><button class="team" data-match="m12" data-slot="t1"><span class="name" id="m12-t1-name">L: Match 7</span><span class="score" id="m12-t1-score">—</span></button><button class="team" data-match="m12" data-slot="t2"><span class="name" id="m12-t2-name">L: Match 8</span><span class="score" id="m12-t2-score">—</span></button></div>
+    </div>
+  </div>
+
+  <div class="standings">
+    <div class="standingsHead"><h3>Placings</h3><span class="muted">Updates live for everyone on the same tournament ID</span></div>
+    <table><thead><tr><th>Place</th><th>Pair</th><th>Status</th></tr></thead><tbody id="standingsBody"><tr><td colspan="3" class="muted">No final placings yet.</td></tr></tbody></table>
+  </div>
+</div>
+
+<div class="modalWrap" id="modalWrap">
+  <div class="modal">
+    <h3 id="modalTitle">Enter result</h3>
+    <p class="muted" id="modalSub">Scores and winner will sync live.</p>
+    <div class="grid2">
+      <div class="field"><label id="label1">Team 1</label><input id="score1" type="number" min="0" max="99" placeholder="0"></div>
+      <div class="field"><label id="label2">Team 2</label><input id="score2" type="number" min="0" max="99" placeholder="0"></div>
+    </div>
+    <p class="muted" style="margin-bottom:8px">Winner</p>
+    <div class="winnerBtns">
+      <button class="winnerBtn" id="winner1"></button>
+      <button class="winnerBtn" id="winner2"></button>
+    </div>
+    <div class="modalActions"><button class="btn" id="cancelBtn">Cancel</button><button class="btn primary" id="saveBtn">Save result</button></div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+import { getFirestore, doc, setDoc, getDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAp9bjpmIpCiDd9d-HKBZUcrWFkjqeiKgY",
+  authDomain: "padel-a5c1b.firebaseapp.com",
+  projectId: "padel-a5c1b",
+  storageBucket: "padel-a5c1b.firebasestorage.app",
+  messagingSenderId: "916450691818",
+  appId: "1:916450691818:web:76d73191e81a3ad2fc6593"
+};
+
+const params = new URLSearchParams(location.search);
+const tournamentId = params.get('tournament') || 'week2';
+document.getElementById('tourId').textContent = tournamentId;
+
+const defaultTeams = {
+  m1:{t1:'Harry & Keith',t2:'Ron & Conor'},
+  m2:{t1:'Cathal & Eoin',t2:'Paddy & The Apprentice'},
+  m3:{t1:'Sean & McD',t2:'Cahir & Luke'},
+  m4:{t1:'Spare Pair 1',t2:'Spare Pair 2'}
+};
+
+let state = { teams: structuredClone(defaultTeams), results: {} };
+let currentMatch = null;
+let selectedWinner = null;
+let db = null;
+let ref = null;
+let unsub = null;
+
+const syncStateEl = document.getElementById('syncState');
+const qs = (id) => document.getElementById(id);
+
+function hasFirebaseConfig(){
+  return firebaseConfig.apiKey && !firebaseConfig.apiKey.startsWith('PASTE_');
+}
+
+function safeClone(obj){ return JSON.parse(JSON.stringify(obj)); }
+
+function derivedRef(matchId, slot){
+  const map = {
+    m5:{t1:{from:'m1',which:'winner'},t2:{from:'m2',which:'winner'}},
+    m6:{t1:{from:'m3',which:'winner'},t2:{from:'m4',which:'winner'}},
+    m7:{t1:{from:'m1',which:'loser'},t2:{from:'m2',which:'loser'}},
+    m8:{t1:{from:'m3',which:'loser'},t2:{from:'m4',which:'loser'}},
+    m9:{t1:{from:'m5',which:'winner'},t2:{from:'m6',which:'winner'}},
+    m10:{t1:{from:'m5',which:'loser'},t2:{from:'m6',which:'loser'}},
+    m11:{t1:{from:'m7',which:'winner'},t2:{from:'m8',which:'winner'}},
+    m12:{t1:{from:'m7',which:'loser'},t2:{from:'m8',which:'loser'}}
+  };
+  return map[matchId]?.[slot] || null;
+}
+
+function resolveName(matchId, slot){
+  if(state.teams[matchId]) return state.teams[matchId][slot];
+  const refObj = derivedRef(matchId, slot);
+  if(!refObj) return '?';
+  const src = state.results[refObj.from];
+  if(!src) return refObj.which === 'winner' ? `W: Match ${refObj.from.slice(1)}` : `L: Match ${refObj.from.slice(1)}`;
+  const sourceSlot = refObj.which === 'winner' ? src.winner : (src.winner === 't1' ? 't2' : 't1');
+  return resolveName(refObj.from, sourceSlot);
+}
+
+function render(){
+  const ids = Array.from({length:12}, (_,i)=>`m${i+1}`);
+  ids.forEach(mid => {
+    ['t1','t2'].forEach(slot => {
+      const nameEl = qs(`${mid}-${slot}-name`);
+      const scoreEl = qs(`${mid}-${slot}-score`);
+      const btn = document.querySelector(`[data-match="${mid}"][data-slot="${slot}"]`);
+      if(!nameEl || !scoreEl || !btn) return;
+      nameEl.textContent = resolveName(mid, slot);
+      const r = state.results[mid];
+      scoreEl.textContent = r ? r.score[slot] : '—';
+      btn.classList.remove('winner','loser');
+      if(r){ btn.classList.add(r.winner===slot ? 'winner' : 'loser'); }
+    });
+  });
+  renderStandings();
+}
+
+function renderStandings(){
+  const placements = [];
+  [
+    {match:'m9',win:1,lose:2},
+    {match:'m10',win:3,lose:4},
+    {match:'m11',win:5,lose:6},
+    {match:'m12',win:7,lose:8}
+  ].forEach(item => {
+    const r = state.results[item.match];
+    if(!r) return;
+    const winnerName = resolveName(item.match, r.winner);
+    const loserName = resolveName(item.match, r.winner === 't1' ? 't2' : 't1');
+    placements.push({ place:item.win, name:winnerName });
+    placements.push({ place:item.lose, name:loserName });
+  });
+  const body = qs('standingsBody');
+  if(!placements.length){ body.innerHTML = '<tr><td colspan="3" class="muted">No final placings yet.</td></tr>'; return; }
+  placements.sort((a,b)=>a.place-b.place);
+  body.innerHTML = placements.map(p => `<tr><td>${p.place}</td><td>${p.name}</td><td>Complete</td></tr>`).join('');
+}
+
+function openModal(matchId){
+  currentMatch = matchId;
+  const t1 = resolveName(matchId, 't1');
+  const t2 = resolveName(matchId, 't2');
+  const existing = state.results[matchId];
+  selectedWinner = existing?.winner || null;
+  qs('modalTitle').textContent = `${t1} vs ${t2}`;
+  qs('modalSub').textContent = `Match ${matchId.slice(1)} · saves live for everyone`;
+  qs('label1').textContent = t1;
+  qs('label2').textContent = t2;
+  qs('score1').value = existing?.score?.t1 ?? '';
+  qs('score2').value = existing?.score?.t2 ?? '';
+  qs('winner1').textContent = t1;
+  qs('winner2').textContent = t2;
+  qs('winner1').classList.toggle('active', selectedWinner==='t1');
+  qs('winner2').classList.toggle('active', selectedWinner==='t2');
+  qs('modalWrap').classList.add('open');
+}
+
+function closeModal(){ qs('modalWrap').classList.remove('open'); currentMatch = null; selectedWinner = null; }
+qs('winner1').addEventListener('click',()=>{ selectedWinner='t1'; qs('winner1').classList.add('active'); qs('winner2').classList.remove('active'); });
+qs('winner2').addEventListener('click',()=>{ selectedWinner='t2'; qs('winner2').classList.add('active'); qs('winner1').classList.remove('active'); });
+qs('cancelBtn').addEventListener('click', closeModal);
+qs('modalWrap').addEventListener('click', e => { if(e.target.id==='modalWrap') closeModal(); });
+
+async function saveResult(){
+  if(!currentMatch || !selectedWinner) return;
+  state.results[currentMatch] = {
+    winner: selectedWinner,
+    score: { t1: Number(qs('score1').value || 0), t2: Number(qs('score2').value || 0) },
+    updatedAt: new Date().toISOString()
+  };
+  render();
+  closeModal();
+  await pushState();
+}
+qs('saveBtn').addEventListener('click', saveResult);
+
+document.querySelectorAll('.team').forEach(btn => {
+  btn.addEventListener('click', () => openModal(btn.dataset.match));
+});
+
+async function pushState(){
+  if(!ref) return;
+  syncStateEl.textContent = '● Saving…';
+  await setDoc(ref, safeClone(state));
+  syncStateEl.textContent = '● Live sync connected';
+}
+
+async function bootFirebase(){
+  if(!hasFirebaseConfig()){
+    syncStateEl.textContent = '● Add Firebase config to enable live sync';
+    render();
+    return;
+  }
+  try {
+    const app = initializeApp(firebaseConfig);
+    db = getFirestore(app);
+    ref = doc(db, 'tournaments', tournamentId);
+    const snap = await getDoc(ref);
+    if(!snap.exists()) await setDoc(ref, safeClone(state));
+    unsub = onSnapshot(ref, (docSnap) => {
+      const data = docSnap.data();
+      if(data){
+        state = {
+          teams: data.teams || safeClone(defaultTeams),
+          results: data.results || {}
+        };
+        render();
+      }
+      syncStateEl.textContent = '● Live sync connected';
+    }, () => {
+      syncStateEl.textContent = '● Sync error — check Firestore rules/config';
+    });
+  } catch (err) {
+    console.error(err);
+    syncStateEl.textContent = '● Firebase error — check config';
+    render();
+  }
+}
+
+qs('copyBtn').addEventListener('click', async () => {
+  const url = `${location.origin}${location.pathname}?tournament=${encodeURIComponent(tournamentId)}`;
+  await navigator.clipboard.writeText(url);
+  qs('copyBtn').textContent = 'Copied';
+  setTimeout(()=>qs('copyBtn').textContent='Copy Share Link',1200);
+});
+
+qs('seedBtn').addEventListener('click', async () => {
+  state.teams = safeClone(defaultTeams);
+  render();
+  await pushState();
+});
+
+qs('themeBtn').addEventListener('click', () => {
+  const root = document.documentElement;
+  root.setAttribute('data-theme', root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+});
+
+bootFirebase();
+</script>
+</body>
+</html>
